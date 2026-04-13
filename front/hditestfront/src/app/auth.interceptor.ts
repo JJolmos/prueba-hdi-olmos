@@ -20,7 +20,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         if (typeof localStorage !== 'undefined') {
           localStorage.removeItem('token');
         }
-        router.navigate(['/login']);
+        router.navigate(['/login'], { queryParams: { authError: 'unauthorized' }});
          return of([] as any); 
       }
       return throwError(() => error);

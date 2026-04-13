@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -29,13 +29,24 @@ export class LoginComponent implements OnInit {
 
   constructor(private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private snackBar: MatSnackBar) { }
 
   ngOnInit() {
     this.authService.logout();
     console.log('Sesión previa limpiada para nuevo inicio.');
+    this.route.queryParams.subscribe(params => {
+      if (params['authError'] === 'unauthorized') {
+        this.snackBar.open('Hubo un problema con tu Autenticacion', 'Cerrar', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+          panelClass: ['error-snackbar'] 
+        });
+      }
+    });
   }
-  
+
   onLogin() {
     this.authService.login(this.loginData).subscribe({
       next: (response) => {
@@ -43,12 +54,7 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.snackBar.open('Usuario o contraseña incorrectos', 'Cerrar', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'bottom',
-          panelClass: ['error-snackbar'] // Opcional: para darle color rojo
-        });
+
       }
     });
 
