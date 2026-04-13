@@ -1,0 +1,58 @@
+# --- IDE & OS ---
+.vscode/
+.idea/
+*.swp
+*.iml
+*.iws
+.DS_Store
+Thumbs.db
+
+# --- Angular (Frontend) ---
+/node_modules/
+/dist/
+/tmp/
+/out-tsc/
+/bazel-out/
+/.angular/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de configuración local de Angular
+.editorconfig
+.prettierrc
+src/environments/environment.development.ts
+src/environments/environment.ts
+
+# --- Spring Boot (Backend) ---
+# Compilados y empaquetados
+target/
+build/
+out/
+*.jar
+*.war
+*.ear
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Gradle
+.gradle/
+/build/
+
+# Configuración y Secretos
+.env
+*.properties
+*.yml
+!src/main/resources/application.properties
+!src/main/resources/application.yml
+# (Opcional) Ignorar archivos de configuración específicos con credenciales
+src/main/resources/application-local.properties
+src/main/resources/application-local.yml
+
+# --- Logs ---
+*.log
+logs/
