@@ -1,0 +1,178 @@
+<mat-sidenav-container class="sidenav-container">
+    <!-- Panel Lateral Derecho -->
+    <mat-sidenav #sidenav mode="over" position="end" class="side-panel">
+        <div class="panel-content">
+            <div class="form-wrapper">
+                <form [formGroup]="reporteForm" (ngSubmit)="guardarReporte()" class="reporte-form">
+                    <h3>Registro de Siniestro</h3>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Fecha de Ocurrencia</mat-label>
+                        <input matInput [matDatepicker]="picker" [max]="maxDate" formControlName="fechaOcurrencia" >
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Nombre de quien reporta</mat-label>
+                        <input matInput formControlName="nombreReporta">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Teléfono</mat-label>
+                        <input matInput formControlName="telefonoContacto">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Correo Electrónico</mat-label>
+                        <input matInput type="email" formControlName="correoElectronico">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Lugar del Siniestro</mat-label>
+                        <input matInput formControlName="lugarSiniestro">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Placas</mat-label>
+                        <input matInput formControlName="placas">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Color del Vehículo</mat-label>
+                        <input matInput formControlName="color">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Descripción del Siniestro</mat-label>
+                        <textarea matInput formControlName="descripcionSiniestro" rows="3"></textarea>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Nombre del Ajustador</mat-label>
+                        <mat-select formControlName="nombreAjustador">
+                            @if (usuarioService.usuariosResource.isLoading()) {
+                            <mat-option disabled>Cargando ajustadores...</mat-option>
+                            }
+
+                            @for (ajustador of usuarios(); track ajustador.id) {
+                            <mat-option [value]="ajustador.correo"
+                            [disabled]="ajustador.estatus !== 1">
+                                {{ ajustador.nombreUsuario }}
+                            </mat-option>
+                            }
+
+                            @if (usuarios().length === 0 && !usuarioService.usuariosResource.isLoading()) {
+                            <mat-option disabled>No hay ajustadores disponibles</mat-option>
+                            }
+                        </mat-select>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Observaciones</mat-label>
+                        <input matInput formControlName="observaciones">
+                    </mat-form-field>
+
+                    <button mat-raised-button color="primary" type="submit" [disabled]="reporteForm.invalid"
+                        class="submit-btn">
+                        <mat-icon>save</mat-icon> Guardar Reporte
+                    </button>
+                </form>
+            </div>
+        </div>
+    </mat-sidenav>
+
+    <!-- Contenido Principal -->
+    <mat-sidenav-content>
+        <div class="dashboard-container">
+            <div class="header-row">
+                <h2>Busqueda de Pólizas</h2>
+            </div>
+            <div class="search-filters">
+                <!-- Campo por Número de Póliza -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Número de Póliza</mat-label>
+                    <input matInput [formControl]="searchNumero" (keyup.enter)="buscarPoliza()">
+                </mat-form-field>
+
+                <!-- Campo por Nombre del Asegurado -->
+                <mat-form-field appearance="outline">
+                    <mat-label>Nombre del Asegurado</mat-label>
+                    <input matInput [formControl]="searchAsegurado" (keyup.enter)="buscarPoliza()">
+                </mat-form-field>
+
+                <button mat-stroked-button class="submit-btn" (click)="buscarPoliza()">
+                    <mat-icon>search</mat-icon> Buscar Poliza
+                </button>
+                <button mat-stroked-button class="submit-btn" (click)="limpiar()">
+                    <mat-icon>clear</mat-icon> Limpiar
+                </button>
+            </div>
+
+            <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+                <!-- No. Póliza -->
+                <ng-container matColumnDef="noPoliza">
+                    <th mat-header-cell *matHeaderCellDef> No. Póliza </th>
+                    <td mat-cell *matCellDef="let p"> {{ p.noPoliza }} </td>
+                </ng-container>
+
+                <!-- Asegurado -->
+                <ng-container matColumnDef="asegurado">
+                    <th mat-header-cell *matHeaderCellDef> Asegurado </th>
+                    <td mat-cell *matCellDef="let p"> {{ p.asegurado }} </td>
+                </ng-container>
+
+                <!-- Línea de Negocio -->
+                <ng-container matColumnDef="liNeanegocio">
+                    <th mat-header-cell *matHeaderCellDef> Línea </th>
+                    <td mat-cell *matCellDef="let p"> {{ p.liNeanegocio }} </td>
+                </ng-container>
+
+                <!-- Vigencia (Combinamos inicio y fin en una sola celda) -->
+                <ng-container matColumnDef="vigencia">
+                    <th mat-header-cell *matHeaderCellDef> Vigencia </th>
+                    <td mat-cell *matCellDef="let p">
+                        {{ p.inicioVigencia | date:'dd/MM/yyyy' }} - {{ p.finVigencia | date:'dd/MM/yyyy' }}
+                    </td>
+                </ng-container>
+
+                <!-- Vehículo -->
+                <ng-container matColumnDef="vehiculo">
+                    <th mat-header-cell *matHeaderCellDef> Vehículo </th>
+                    <td mat-cell *matCellDef="let p"> {{ p.vehiculoAsegurado || 'N/A' }} </td>
+                </ng-container>
+
+                <!-- Acciones -->
+                <ng-container matColumnDef="acciones">
+                    <th mat-header-cell *matHeaderCellDef> </th>
+                    <td mat-cell *matCellDef="let p">
+                        <button mat-icon-button (click)="setDatosPoliza(p);resetForm();sidenav.open();"><mat-icon>edit</mat-icon></button>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </table>
+            <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons
+                aria-label="Seleccionar página de pólizas">
+            </mat-paginator>
+        </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>
+
+<ng-template #dialogTemplate let-data>
+  <h2 mat-dialog-title>Resumen del Siniestro</h2>
+  
+  <mat-dialog-content class="mat-typography">
+    <div style="display: flex; flex-direction: column; gap: 10px; padding: 10px 0;">
+      <p><strong>Folio:</strong> {{ data.id }}</p>
+      <p><strong>Reporta:</strong> {{ data.nombreAjustador }}</p>
+      <p><strong>Fecha:</strong> {{ data.fechaRegistro | date:'short' }}</p>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close color="primary">CERRAR</button>
+  </mat-dialog-actions>
+</ng-template>
