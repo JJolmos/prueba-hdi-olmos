@@ -8,7 +8,7 @@
 Thumbs.db
 
 # --- Angular (Frontend) ---
-/node_modules/
+node_modules/
 /dist/
 /tmp/
 /out-tsc/
