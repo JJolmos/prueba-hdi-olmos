@@ -9,11 +9,11 @@ Thumbs.db
 
 # --- Angular (Frontend) ---
 node_modules/
-/dist/
-/tmp/
-/out-tsc/
-/bazel-out/
-/.angular/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+.angular/
 .npm/
 npm-debug.log*
 yarn-debug.log*
